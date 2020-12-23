@@ -238,7 +238,7 @@ uint32_t cache_read_inst(uint32_t address) {
     copy_line(INST_CACHE[group].lines[target_line].mem, address);
     INST_CACHE[group].lines[target_line].time = 0;
     INST_CACHE[group].lines[target_line].mark = ((line_mark & 0XFFFF) << 1) | (0X0001);
-    //stat_cycles+=49;
+    
 #ifdef cacheDebug
 
         printf("cache no hit get value: %08x \n", read_4_u8(INST_CACHE[group].lines[target_line].mem,inner_offset));
@@ -370,7 +370,7 @@ void cache_write_32(uint32_t address, uint32_t data) {
 
     copy_line(CACHE[group].lines[target_line].mem, address);
     CACHE[group].lines[target_line].time = 0;
-    CACHE[group].lines[target_line].mark = (line_mark << 2) | 1;
+    CACHE[group].lines[target_line].mark = (line_mark << 2) | 3;
     
     is_waiting_data = 49;
     write_4_u8(CACHE[group].lines[target_line].mem,inner_offset,data);
@@ -384,6 +384,7 @@ bool direct_write_chace(uint32_t group, int inner_offset, uint32_t line_mark,uin
         uint32_t mk = (CACHE[group].lines[i].mark) >> 2;
         if(mk == line_mark && valid(&CACHE[group].lines[i])) {
             write_4_u8(CACHE[group].lines[i].mem,inner_offset,data);
+            CACHE[group].lines[i].mark | 2;
             CACHE[group].lines[i].time = 0;
             ret = true;
         } else {
